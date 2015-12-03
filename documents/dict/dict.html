@@ -1,0 +1,99 @@
+<html>
+
+<head>
+<title>Dictionary</title>
+ <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" /> 
+ <meta http-equiv="content-style-type" content="text/css" /> 
+
+</head>
+
+<body>
+    <h2>Welcome to translater</h2
+        <form method="get" action="/cgi-bin/check.rb">
+        <p>search</br><textarea id="src" name="word" cols="50" rows="10"></textarea></p>
+        <!--        <p><input type="submit" value="send"></p>-->
+    </form>
+    <!--指定IDのエレメント取得サンプル-->
+<script type="text/javascript">
+//var dct;
+resetDict();
+
+function resetDict()
+{
+    dct = {apple: "りんご", banana: "バナナ"};
+}
+
+function convText0(word)
+{
+ return ('<word onmouseover="mapDict('+ "'"+ word + "'" + ')" onmouseout="mapExit()">' + word + '</word> ');
+}
+
+function convText()
+{
+  t = "";
+  txt = document.getElementById("src").value.split(" ");
+  for (i = 0; i < txt.length; i++) {
+      t = t + convText0(txt[i]);
+  }
+
+  document.getElementById("linked").innerHTML = t;
+}
+
+function convText2()
+{
+  txt = document.getElementById("src").value.split(" ").join("+");
+
+  var xmlHttpReq = new XMLHttpRequest();
+  xmlHttpReq.open('GET', '/cgi-bin/dict/check.rb?word='+txt, true);
+
+  xmlHttpReq.onreadystatechange = function() {
+    if (xmlHttpReq.readyState==4) {
+      document.getElementById("linked").innerHTML = xmlHttpReq.responseText;
+    }
+  }
+
+  xmlHttpReq.send(null);
+}
+
+function getDict()
+{
+ txt = document.getElementById("src").value;
+  var xmlHttpReq = new XMLHttpRequest();
+  xmlHttpReq.open('GET', '/cgi-bin/dict/dict.cgi?word='+txt, true);
+  xmlHttpReq.onreadystatechange = function() {
+    if (xmlHttpReq.readyState==4) {
+      txt = xmlHttpReq.responseText;
+      dct = JSON.parse(txt);
+    }
+  }
+
+  xmlHttpReq.send(null);
+}
+
+function mapDict(wd)
+{
+  if (dct[wd]) {
+    element=document.getElementById("display");
+    element.innerHTML = dct[wd];
+  }
+}
+
+function mapExit()
+{
+  element=document.getElementById("display");
+  element.innerHTML = "[無指定]";
+}
+
+</script>
+<p id="linked">
+</p>
+
+<div id="display">null</div>
+
+<br/>
+<button onclick="getDict()">get remote dictionary</button>
+<button onclick="resetDict()">reset dictionary</button>
+<button onclick="convText()">add link</button>
+
+</body>
+</html>
